@@ -13,11 +13,12 @@
   --g1:#3A3A3A; --g2:#767676; --g3:#B0B0B0; --g4:#D8D8D8; --g5:#F0F0F0;
   --border:#E8E8E8;
   --acc:#8B7355; --acc-l:#F5F0E8;
-  --lift:#3B3270; --lift-l:#F0EEF9;
-  --run:#1E5E4A;  --run-l:#EBF4EF;
-  --pil:#7A3030;  --pil-l:#F9EEEE;
-  --ok:#2A7A4A;   --ok-l:#E8F5EE;
-  --warn:#8B5E00; --warn-l:#FEF6E4;
+  --lift:#9B5F72;   --lift-l:#FDF3F6;  --lift-b:#F0CDD6;
+  --run:#B07888;    --run-l:#FEF5F7;   --run-b:#EDD5DB;
+  --pil:#CCA0B0;    --pil-l:#FFF8FA;   --pil-b:#F5E3E8;
+  --rest-c:#E0C8CE; --rest-l:#FDFBFB;
+  --ok:#2A7A4A;     --ok-l:#E8F5EE;
+  --warn:#8B5E00;   --warn-l:#FEF6E4;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-font-smoothing:antialiased}
@@ -113,10 +114,10 @@ textarea{resize:vertical;line-height:1.6}
 .day-slot:hover{border-color:var(--g3)}
 .day-slot.empty .slot-hint{font-size:10px;color:var(--g4)}
 .day-slot.empty .slot-time{font-size:9.5px;color:var(--g4);margin-top:6px;font-style:italic}
-.day-slot[data-wt="lift"]{border:1px solid var(--lift);border-left:2.5px solid var(--lift);background:var(--lift-l)}
-.day-slot[data-wt="run"]{border:1px solid var(--run);border-left:2.5px solid var(--run);background:var(--run-l)}
-.day-slot[data-wt="pilates"]{border:1px solid var(--pil);border-left:2.5px solid var(--pil);background:var(--pil-l)}
-.day-slot[data-wt="rest"]{border:1px dashed var(--g4);background:var(--off)}
+.day-slot[data-wt="lift"]{border:1px solid var(--lift-b);border-left:2.5px solid var(--lift);background:var(--lift-l)}
+.day-slot[data-wt="run"]{border:1px solid var(--run-b);border-left:2.5px solid var(--run);background:var(--run-l)}
+.day-slot[data-wt="pilates"]{border:1px solid var(--pil-b);border-left:2.5px solid var(--pil);background:var(--pil-l)}
+.day-slot[data-wt="rest"]{border:1px dashed var(--rest-c);background:var(--rest-l)}
 .day-slot.done-slot{opacity:.7}
 .done-check{font-size:9px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ok);margin-top:2px}
 .slot-top{display:flex;flex-direction:column;gap:2px;width:100%}
@@ -131,12 +132,12 @@ textarea{resize:vertical;line-height:1.6}
 .day-slot[data-wt="lift"]    .slot-gen{color:var(--lift)}
 .day-slot[data-wt="run"]     .slot-gen{color:var(--run)}
 .day-slot[data-wt="pilates"] .slot-gen{color:var(--pil)}
-.slot-done{font-size:9px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;background:none;border:none;cursor:pointer;padding:0;color:var(--ok)}
+.slot-log{font-size:9px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;background:none;border:none;cursor:pointer;padding:0;color:var(--ok)}
 .day-slot-2{border:1px solid;border-radius:2px;padding:6px 8px;display:flex;align-items:center;gap:5px;cursor:pointer;transition:opacity .15s}
 .day-slot-2:hover{opacity:.75}
-.day-slot-2[data-wt="lift"]{border-color:var(--lift);background:var(--lift-l)}
-.day-slot-2[data-wt="run"]{border-color:var(--run);background:var(--run-l)}
-.day-slot-2[data-wt="pilates"]{border-color:var(--pil);background:var(--pil-l)}
+.day-slot-2[data-wt="lift"]{border-color:var(--lift-b);background:var(--lift-l)}
+.day-slot-2[data-wt="run"]{border-color:var(--run-b);background:var(--run-l)}
+.day-slot-2[data-wt="pilates"]{border-color:var(--pil-b);background:var(--pil-l)}
 .ds2-name{font-size:9.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;flex:1}
 .day-slot-2[data-wt="lift"] .ds2-name{color:var(--lift)}
 .day-slot-2[data-wt="run"]  .ds2-name{color:var(--run)}
@@ -320,6 +321,54 @@ textarea{resize:vertical;line-height:1.6}
   .donut-cell{border-right:none;border-bottom:1px solid var(--border)}
   .wrap,header,nav{padding-left:18px;padding-right:18px}
 }
+
+/* Log Session Modal */
+.log-field{margin-bottom:12px}
+.log-field label{font-size:11px;color:var(--g2);display:block;margin-bottom:4px}
+.log-2col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.log-field textarea{height:110px}
+
+/* Meal Log */
+.meal-day-card{border:1px solid var(--border);border-radius:3px;margin-bottom:7px;overflow:hidden}
+.mdc-hdr{padding:10px 16px;background:var(--off);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none}
+.mdc-hdr:hover{background:var(--g5)}
+.mdc-day{font-family:'Playfair Display',serif;font-size:15px}
+.mdc-meta{font-size:11px;color:var(--g3)}
+.mdc-body{padding:14px 16px;display:none}
+.mdc-body.open{display:block}
+.meal-section{margin-bottom:10px}
+.meal-section-lbl{font-size:9.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--g3);margin-bottom:5px}
+.meal-entry-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--g5);font-size:13px}
+.meal-entry-row:last-child{border-bottom:none}
+.meal-entry-cal{font-family:'Playfair Display',serif;font-size:14px;color:var(--acc);flex-shrink:0}
+.meal-entry-del{background:none;border:none;color:var(--g3);cursor:pointer;font-size:14px;line-height:1;padding:0 2px;flex-shrink:0}
+.meal-entry-del:hover{color:var(--lift)}
+.meal-empty{font-size:12px;color:var(--g4);font-style:italic;padding:3px 0}
+.add-meal-bar{margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.add-meal-row{display:grid;grid-template-columns:110px 1fr 56px 56px 56px 56px auto;gap:5px;align-items:center}
+.add-meal-row input,.add-meal-row select{padding:7px 8px;font-size:12px}
+
+.wh-type-line{font-size:13px;margin-bottom:3px}
+.wh-notes-txt{font-size:12px;color:var(--g2);font-style:italic;margin-top:3px;line-height:1.5;white-space:pre-wrap}
+.wh-link-line{font-size:11px;margin-top:4px}
+.wh-link-line a{color:var(--acc);text-decoration:none}
+.wh-link-line a:hover{text-decoration:underline}
+
+.metric-list{border:1px solid var(--border);border-radius:3px;overflow:hidden}
+.metric-row{display:flex;align-items:center;gap:12px;padding:9px 14px;border-bottom:1px solid var(--g5)}
+.metric-row:last-child{border-bottom:none}
+.mr-date{font-size:11px;color:var(--g3);flex-shrink:0;width:80px}
+.mr-weight{font-family:'Playfair Display',serif;font-size:18px;flex-shrink:0;width:82px}
+.mr-notes-txt{font-size:12px;color:var(--g2);font-style:italic;flex:1;line-height:1.4}
+.mr-actions{display:flex;gap:6px;flex-shrink:0}
+.mr-btn{background:none;border:none;cursor:pointer;font-size:11px;color:var(--g3);padding:0;font-family:'Outfit',sans-serif}
+.mr-btn:hover{color:var(--black)}
+.mr-del{color:var(--g3)}
+.mr-del:hover{color:var(--lift) !important}
+.metric-edit-row{display:grid;grid-template-columns:110px 1fr auto auto;gap:6px;align-items:center;padding:7px 14px;border-bottom:1px solid var(--g5);background:var(--off)}
+.metric-edit-row input{padding:6px 8px;font-size:12px}
+.mfp-tip{background:var(--pil-l);border:1px solid var(--pil-b);border-radius:3px;padding:10px 14px;font-size:11.5px;color:var(--g1);line-height:1.6;margin-bottom:12px}
+.mfp-tip strong{font-weight:600;color:var(--pil)}
 </style>
 </head>
 <body>
@@ -411,6 +460,7 @@ textarea{resize:vertical;line-height:1.6}
 <!-- ═══ NUTRITION ═══ -->
 <section id="nutrition" class="panel">
   <div class="page-title"><h1>Nutrition Log</h1><p>Track today's intake. Resets each morning. Targets sync from your active goal.</p></div>
+  <div class="mfp-tip"><strong>MyFitnessPal:</strong> Tap the nutrition summary bar at the bottom of your MFP diary to see daily totals, then enter cal / P / C / F here. Or log individual foods by their nutrition label values.</div>
   <div class="nut-top card">
     <div class="donut-cell">
       <div class="donut-wrap">
@@ -448,35 +498,8 @@ textarea{resize:vertical;line-height:1.6}
 
 <!-- ═══ MEALS ═══ -->
 <section id="meals" class="panel">
-  <div class="page-title"><h1>Meals</h1><p>Generate a 7-day plan or build meals from your groceries.</p></div>
-  <div class="meal-sub-nav">
-    <button class="msn-btn on" onclick="mealSub('meal-plan',this)">7-Day Plan</button>
-    <button class="msn-btn"    onclick="mealSub('groc-meals',this)">Grocery to Meals</button>
-  </div>
-  <div id="meal-plan" class="msub on">
-    <div class="plan-actions">
-      <button class="btn btn-dark" id="gen-plan-btn" onclick="genMealPlan()">Generate Plan</button>
-      <button class="btn btn-outline btn-sm" id="groc-list-btn" onclick="genGrocery()" disabled>Grocery List</button>
-      <span id="meals-loading" style="display:none;font-size:11.5px;color:var(--g2)"><span class="spin"></span>&ensp;Generating…</span>
-    </div>
-    <div id="meals-container"><div class="empty"><div class="empty-title">No plan yet</div><div class="empty-msg">Generate a personalized 7-day plan aligned to your active goal.</div></div></div>
-    <div id="grocery-section" style="display:none;margin-top:24px"><div class="sec-lbl" style="margin-bottom:14px">Grocery List</div><div class="grocery-grid" id="grocery-grid"></div></div>
-  </div>
-  <div id="groc-meals" class="msub">
-    <div class="card card-p" style="margin-bottom:14px">
-      <div style="font-family:'Playfair Display',serif;font-size:18px;margin-bottom:6px">What's in your kitchen?</div>
-      <p style="font-size:12px;color:var(--g2);margin-bottom:14px;line-height:1.6">Type what you have, or tap staples below. Claude builds meals from those exact ingredients.</p>
-      <div class="groc-chips" id="staple-chips"></div>
-      <textarea id="groc-ta" style="height:100px;margin-bottom:12px" placeholder="chicken breast, eggs, Greek yogurt, spinach, sweet potato…"></textarea>
-      <div style="display:flex;gap:8px;align-items:center">
-        <button class="btn btn-dark" onclick="genFromGrocery()">Generate Meals</button>
-        <button class="btn btn-outline btn-sm" onclick="clearGroc()">Clear</button>
-        <span id="groc-loading" style="display:none;font-size:11.5px;color:var(--g2)"><span class="spin"></span>&ensp;Building…</span>
-      </div>
-    </div>
-    <div id="groc-out"><div class="empty"><div class="empty-title">No meals yet</div><div class="empty-msg">Add ingredients above and generate.</div></div></div>
-  </div>
-</section>
+  <div class="page-title"><h1>Meal Log</h1><p>Log what you eat each day by meal type. Tap any day to expand and add entries.</p></div>
+  <div id="meal-log-container"></div>
 
 <!-- ═══ RUNNA ═══ -->
 <section id="runna" class="panel">
@@ -545,6 +568,50 @@ textarea{resize:vertical;line-height:1.6}
 </section>
 
 </div><!-- /wrap -->
+<!-- LOG SESSION MODAL -->
+<div class="modal-bg" id="log-modal">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-hdr">
+      <div><div class="modal-day-lbl" id="log-modal-lbl"></div><h2>Log Session</h2></div>
+      <button class="modal-x" onclick="closeLogModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="log-2col">
+        <div class="log-field">
+          <label>Class / Studio</label>
+          <select id="log-class">
+            <option value="">— None / Custom —</option>
+            <option>Solidcore</option>
+            <option>CorePower</option>
+            <option>Barry's</option>
+            <option>Pilates class</option>
+            <option>YouTube</option>
+            <option>Outdoor run</option>
+            <option>Treadmill</option>
+            <option>Home workout</option>
+          </select>
+        </div>
+        <div class="log-field">
+          <label>Duration</label>
+          <input type="text" id="log-duration" placeholder="e.g. 50 min">
+        </div>
+      </div>
+      <div class="log-field">
+        <label>YouTube / Class Link (optional)</label>
+        <input type="url" id="log-link" placeholder="https://youtube.com/watch?v=…">
+      </div>
+      <div class="log-field">
+        <label>Exercises, sets &amp; reps — or any notes</label>
+        <textarea id="log-notes" placeholder="e.g.&#10;Goblet squat 4×10 @ 35lb&#10;KB single-arm row 3×12 each&#10;&#10;Or for a class:&#10;Solidcore 45 min — posterior chain focus, RPE 8&#10;&#10;Or for a run:&#10;4 miles easy, avg pace 10:45"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeLogModal()">Cancel</button>
+      <button class="btn btn-ok btn-sm" onclick="submitLog()">Save to History</button>
+    </div>
+  </div>
+</div>
+
 
 <!-- MODAL -->
 <div class="modal-bg" id="workout-modal">
@@ -558,7 +625,7 @@ textarea{resize:vertical;line-height:1.6}
     </div>
     <div class="modal-body" id="modal-body"><div class="empty"><div class="empty-msg" style="font-style:italic">Generating session…</div></div></div>
     <div class="modal-footer">
-      <button class="btn btn-ok btn-sm" id="modal-done-btn" onclick="markDoneFromModal()">Mark Done</button>
+      <button class="btn btn-ok btn-sm" onclick="openLogModal(null,null,null,true)">Log session</button>
       <div class="modal-footer-r">
         <button class="btn btn-outline btn-sm" onclick="closeModal()">Close</button>
         <button class="btn btn-dark btn-sm" onclick="regenWorkout()">Regenerate</button>
@@ -589,9 +656,18 @@ if (configured) {
 // ═══════════════════════════════════════════
 // CONSTANTS
 // ═══════════════════════════════════════════
-const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-const BLOCKED = [2];
-const TIMES = {0:'Open — recovery',1:'7:30–8:30am · Before STS 10',2:'Rest — classes',3:'7:30am or 12:15pm',4:'12:30pm · After PHI 30',5:'Open morning',6:'Open morning — long run'};
+// Monday-first: 0=Mon,1=Tue,2=Wed,3=Thu,4=Fri,5=Sat,6=Sun
+const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const BLOCKED = [1]; // Tuesday
+const TIMES = {
+  0:'7:30–8:30am · Before STS 10',
+  1:'Rest — classes all day',
+  2:'7:30am or 12:15pm',
+  3:'12:30pm · After PHI 30',
+  4:'Open morning',
+  5:'Open morning — long run',
+  6:'Open — recovery'
+};
 const GOAL_PRESETS = {
   cut:         {cal:1300,p:135,c:120,f:38,label:'Cut'},
   recomp:      {cal:1500,p:130,c:150,f:42,label:'Recomposition'},
@@ -663,17 +739,15 @@ async function dbLoadTodayFood() {
   refreshNutrition();
 }
 
-async function dbLogWorkout(dayIdx, wt, notes='') {
-  const entry = {
-    date: today(),
-    day_name: DAYS[dayIdx],
-    workout_type: wt,
-    notes: notes
-  };
+async function dbLogWorkout(entry) {
   if (!db) return;
   await db.from('workout_log').insert(entry);
 }
 
+async function dbUpdateMetric(id, weight, notes) {
+  if (!db) return;
+  await db.from('body_metrics').update({weight, notes}).eq('id',id);
+}
 async function dbLogMetric(weight, notes) {
   if (!db) return;
   await db.from('body_metrics').insert({date: today(), weight, notes});
@@ -719,6 +793,7 @@ function switchTab(id, btn) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
   document.getElementById(id).classList.add('on'); btn.classList.add('on');
   if (id === 'history') { loadWorkoutHistory(); loadMetrics(); setDefaultHistDates(); }
+  if (id === 'meals') renderMealLog();
 }
 function mealSub(id, btn) {
   document.querySelectorAll('.msub').forEach(p => p.classList.remove('on'));
@@ -762,33 +837,48 @@ function removeSec(i, e) {
   renderGrid(); updateQuotas(); saveSettings();
 }
 
-async function markDone(i, wt, e) {
-  if (e) e.stopPropagation();
-  const d = schedule[i];
-  const isSecondary = (wt === d.wt2);
-  const notes = prompt('Optional note for this session (pace, RPE, how it felt):', '') || '';
-  if (isSecondary) d.done2 = true; else d.done = true;
+// Log Session Modal
+let logDay = null, logWt = null;
+
+function openLogModal(i, wt, e, fromWorkout=false) {
+  if(e) e.stopPropagation();
+  if(fromWorkout){ i=modalDay; wt=modalWt; closeModal(); }
+  logDay=i; logWt=wt;
+  document.getElementById('log-modal-lbl').textContent = i!==null ? `${DAYS[i]} — ${wt.charAt(0).toUpperCase()+wt.slice(1)}` : '';
+  ['log-class','log-duration','log-link','log-notes'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('log-modal').classList.add('open');
+}
+function closeLogModal(){ document.getElementById('log-modal').classList.remove('open'); }
+
+async function submitLog() {
+  if(logDay===null||!logWt) return;
+  const classType=document.getElementById('log-class').value;
+  const duration=document.getElementById('log-duration').value;
+  const link=document.getElementById('log-link').value;
+  const notes=document.getElementById('log-notes').value;
+  await dbLogWorkout({date:today(), day_name:DAYS[logDay], workout_type:logWt, class_type:classType, duration, link, notes});
+  const d=schedule[logDay];
+  if(logWt===d.wt2) d.done2=true; else d.done=true;
   renderGrid(); saveSettings();
-  await dbLogWorkout(i, wt, notes);
+  closeLogModal();
 }
 
-async function markDoneFromModal() {
-  if (modalDay === null || !modalWt) return;
-  const notes = document.getElementById('modal-notes')?.value || '';
-  const d = schedule[modalDay];
-  if (modalWt === d.wt2) d.done2 = true; else d.done = true;
-  renderGrid(); saveSettings();
-  await dbLogWorkout(modalDay, modalWt, notes);
-  closeModal();
+function getMondayOfWeek() {
+  const now = new Date();
+  const dow = now.getDay();
+  const mon = new Date(now);
+  mon.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1));
+  mon.setHours(0,0,0,0);
+  return mon;
 }
 
 function renderGrid() {
-  const today2 = new Date();
-  const sun = new Date(today2); sun.setDate(today2.getDate() - today2.getDay());
+  const todayStr = today();
+  const mon = getMondayOfWeek();
   const grid = document.getElementById('day-grid'); grid.innerHTML = '';
   DAYS.forEach((name, i) => {
-    const d2 = new Date(sun); d2.setDate(sun.getDate() + i);
-    const isToday = d2.toDateString() === today2.toDateString();
+    const d2 = new Date(mon); d2.setDate(mon.getDate() + i);
+    const isToday = d2.toISOString().split('T')[0] === todayStr;
     const s = schedule[i];
     const col = document.createElement('div'); col.className = 'day-col';
     col.innerHTML = `<div class="day-hdr${isToday?' today':''}"><div class="d-name">${name}</div><div class="d-num">${d2.getDate()}</div></div>`;
@@ -812,7 +902,7 @@ function renderGrid() {
         </div>
         <div class="slot-actions">
           <button class="slot-gen" onclick="openModal(${i},'${s.wt}',event)">Generate &rsaquo;</button>
-          ${!s.done ? `<button class="slot-done" onclick="markDone(${i},'${s.wt}',event)">Done</button>` : ''}
+          <button class="slot-log" onclick="openLogModal(${i},'${s.wt}',event)">${s.done?'Re-log':'Log session'}</button>
         </div>`;
     }
     col.appendChild(slot);
@@ -822,7 +912,7 @@ function renderGrid() {
       s2.className = 'day-slot-2' + (s.done2 ? ' done-slot' : '');
       s2.dataset.wt = s.wt2;
       const l2 = s.wt2.charAt(0).toUpperCase() + s.wt2.slice(1);
-      s2.innerHTML = `<span class="ds2-name">${l2}${s.done2?' ✓':''}</span>${!s.done2?`<button class="slot-done" style="font-size:9px;background:none;border:none;cursor:pointer;color:var(--ok);font-weight:600;letter-spacing:.07em;text-transform:uppercase" onclick="markDone(${i},'${s.wt2}',event)">Done</button>`:''}<button class="ds2-del" onclick="removeSec(${i},event)">×</button>`;
+      s2.innerHTML = `<span class="ds2-name">${l2}${s.done2?' ✓':''}</span>${!s.done2?`<button style="font-size:9px;background:none;border:none;cursor:pointer;color:var(--ok);font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:0" onclick="openLogModal(${i},'${s.wt2}',event)">Log</button>`:''}<button class="ds2-del" onclick="removeSec(${i},event)">×</button>`;
       s2.addEventListener('click', e => { if (!e.target.classList.contains('ds2-del') && !e.target.classList.contains('slot-done')) openModal(i, s.wt2, e); });
       col.appendChild(s2);
     }
@@ -846,9 +936,13 @@ function updateQuotas() {
 
 function autoFill() {
   schedule = Array(7).fill(null).map((_,i) => ({wt:BLOCKED.includes(i)?'rest':null, wt2:null, done:false, done2:false}));
-  schedule[1].wt='lift'; schedule[3].wt='lift'; schedule[3].wt2='run';
-  schedule[4].wt='pilates'; schedule[5].wt='run'; schedule[5].wt2='lift';
-  schedule[6].wt='run'; schedule[0].wt='pilates';
+  // Mon-first: 0=Mon,1=Tue(blocked),2=Wed,3=Thu,4=Fri,5=Sat,6=Sun
+  schedule[0].wt='lift';
+  schedule[2].wt='lift'; schedule[2].wt2='run';
+  schedule[3].wt='pilates';
+  schedule[4].wt='run'; schedule[4].wt2='lift';
+  schedule[5].wt='run';
+  schedule[6].wt='pilates';
   renderGrid(); updateQuotas(); saveSettings();
 }
 function resetWeek() {
@@ -1062,6 +1156,7 @@ async function genGrocery() {
 // ─── Grocery to Meals ───
 (function initStaples(){
   const row=document.getElementById('staple-chips');
+  if(!row) return;
   STAPLES.forEach(s=>{
     const c=document.createElement('button'); c.className='groc-chip'; c.textContent=s;
     c.onclick=()=>{
@@ -1175,17 +1270,44 @@ async function loadMetrics() {
   if(!db){out.innerHTML='<div class="empty"><div class="empty-msg">Database not connected.</div></div>';return;}
   const {data}=await db.from('body_metrics').select('*').order('date',{ascending:false}).limit(30);
   if(!data?.length){out.innerHTML='<div class="empty"><div class="empty-msg">No metrics logged yet.</div></div>';return;}
-  out.innerHTML=`<div class="card card-p">${data.map(m=>{
+  out.innerHTML=`<div class="metric-list">${data.map(m=>{
     const d=new Date(m.date+'T12:00:00');
-    return`<div class="metric-row">
+    const escaped=(m.notes||'').replace(/'/g,'&apos;');
+    return`<div class="metric-row" id="mr-${m.id}">
       <span class="mr-date">${d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span>
       <span class="mr-weight">${m.weight} lbs</span>
-      <span class="mr-notes">${m.notes||''}</span>
-      <button class="mr-del" onclick="deleteMetric('${m.id}',this)">×</button>
+      <span class="mr-notes" style="font-size:12px;color:var(--g2);font-style:italic;flex:1">${m.notes||''}</span>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--g3);font-family:'Outfit',sans-serif" onclick="startEditMetric('${m.id}','${m.weight}','${escaped}')">Edit</button>
+        <button style="background:none;border:none;cursor:pointer;font-size:13px;color:var(--g3)" onclick="deleteMetric('${m.id}')">×</button>
+      </div>
     </div>`;
   }).join('')}</div>`;
 }
 
+
+function startEditMetric(id, weight, notes) {
+  const row = document.getElementById('mr-'+id);
+  if (!row) return;
+  const decoded = (notes||'').replace(/&apos;/g, "'");
+  row.outerHTML = `<div class="metric-edit-row" id="mr-${id}">
+    <div style="display:flex;align-items:center;gap:5px">
+      <input type="number" id="ew-${id}" value="${weight}" step="0.1" style="width:82px">
+      <span style="font-size:11px;color:var(--g3)">lbs</span>
+    </div>
+    <input type="text" id="en-${id}" value="${decoded}" placeholder="Note…">
+    <button class="btn btn-dark btn-sm" onclick="saveMetricEdit('${id}')">Save</button>
+    <button class="btn btn-outline btn-sm" onclick="loadMetrics()">Cancel</button>
+  </div>`;
+  document.getElementById('ew-'+id)?.focus();
+}
+async function saveMetricEdit(id) {
+  const w = parseFloat(document.getElementById('ew-'+id)?.value);
+  const n = document.getElementById('en-'+id)?.value || '';
+  if (!w) return;
+  await dbUpdateMetric(id, w, n);
+  loadMetrics();
+}
 async function logMetric() {
   const w=parseFloat(document.getElementById('m-weight').value);
   const n=document.getElementById('m-notes').value||'';
@@ -1196,10 +1318,10 @@ async function logMetric() {
   loadMetrics();
 }
 
-async function deleteMetric(id, btn) {
+async function deleteMetric(id) {
   if(!db) return;
   await db.from('body_metrics').delete().eq('id',id);
-  btn.closest('.metric-row').remove();
+  document.getElementById('mr-'+id)?.remove();
 }
 
 async function genWeeklySummary() {
@@ -1262,6 +1384,89 @@ function copySummary() {
   const s=document.getElementById('summary-out').dataset.summary;
   if(!s) return;
   navigator.clipboard.writeText(s).then(()=>{ const btn=event.target; btn.textContent='Copied!'; setTimeout(()=>btn.textContent='Copy to Clipboard',2000); });
+}
+
+
+// ════════════ MEAL LOG ════════════
+async function dbAddMealEntry(entry) {
+  if (!db) return Date.now()+'';
+  const {data} = await db.from('meal_log').insert(entry).select().single();
+  return data?.id;
+}
+async function dbDeleteMealEntry(id) {
+  if (!db) return;
+  await db.from('meal_log').delete().eq('id',id);
+}
+async function dbLoadMealsByDate(date) {
+  if (!db) return [];
+  const {data} = await db.from('meal_log').select('*').eq('date',date).order('created_at');
+  return data || [];
+}
+const MEAL_TYPES = ['Breakfast','Lunch','Snack','Dinner'];
+
+async function renderMealLog() {
+  const container = document.getElementById('meal-log-container');
+  container.innerHTML = '<div class="empty" style="padding:16px"><div class="empty-msg">Loading…</div></div>';
+  const mon = getMondayOfWeek();
+  let html = '';
+  for(let i=0; i<7; i++){
+    const d = new Date(mon); d.setDate(mon.getDate()+i);
+    const dateStr = d.toISOString().split('T')[0];
+    const isToday = dateStr===today();
+    const fullName = d.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+    const entries = await dbLoadMealsByDate(dateStr);
+    const totalCal = entries.reduce((a,e)=>a+(e.cal||0),0);
+    const totalP = entries.reduce((a,e)=>a+(e.protein||0),0);
+    const byType = {};
+    MEAL_TYPES.forEach(mt=>{byType[mt]=entries.filter(e=>e.meal_type===mt);});
+    html += `<div class="meal-day-card">
+      <div class="mdc-hdr" onclick="toggleMealDay('mdc-${dateStr}')">
+        <span class="mdc-day">${fullName}${isToday?' <em style=\'font-size:11px;color:var(--acc)\'>Today</em>':''}</span>
+        <span class="mdc-meta">${totalCal?`${totalCal} cal · ${totalP}g P`:''}</span>
+      </div>
+      <div class="mdc-body${isToday?' open':''}" id="mdc-${dateStr}">`;
+    MEAL_TYPES.forEach(mt=>{
+      const items=byType[mt]||[];
+      html+=`<div class="meal-section"><div class="meal-section-lbl">${mt}</div>`;
+      if(items.length){
+        items.forEach(e=>{html+=`<div class="meal-entry-row"><span style="flex:1">${e.name}</span><span class="meal-entry-cal">${e.cal}</span><span style="font-size:11px;color:var(--g3);flex-shrink:0">P:${e.protein||0}g</span><button class="meal-entry-del" onclick="deleteMealEntry('${e.id}','${dateStr}')">×</button></div>`;});
+      } else {
+        html+=`<div class="meal-empty">—</div>`;
+      }
+      html+='</div>';
+    });
+    html+=`<div class="add-meal-bar">
+      <div class="add-meal-row">
+        <select id="mt-${dateStr}">${MEAL_TYPES.map(t=>`<option>${t}</option>`).join('')}</select>
+        <input type="text"   id="mn-${dateStr}" placeholder="Food or meal name">
+        <input type="number" id="mc-${dateStr}" placeholder="Cal" min="0">
+        <input type="number" id="mp-${dateStr}" placeholder="P(g)" min="0">
+        <input type="number" id="mb-${dateStr}" placeholder="C(g)" min="0">
+        <input type="number" id="mf-${dateStr}" placeholder="F(g)" min="0">
+        <button class="btn btn-dark btn-sm" onclick="addMealEntry('${dateStr}')">Add</button>
+      </div>
+    </div></div></div>`;
+  }
+  container.innerHTML = html;
+}
+
+function toggleMealDay(id){const el=document.getElementById(id); if(el) el.classList.toggle('open');}
+
+async function addMealEntry(dateStr){
+  const mt=document.getElementById(`mt-${dateStr}`).value;
+  const name=document.getElementById(`mn-${dateStr}`).value.trim();
+  const cal=parseInt(document.getElementById(`mc-${dateStr}`).value)||0;
+  const protein=parseInt(document.getElementById(`mp-${dateStr}`).value)||0;
+  const carbs=parseInt(document.getElementById(`mb-${dateStr}`).value)||0;
+  const fat=parseInt(document.getElementById(`mf-${dateStr}`).value)||0;
+  if(!name||!cal) return;
+  await dbAddMealEntry({date:dateStr,meal_type:mt,name,cal,protein,carbs,fat});
+  renderMealLog();
+}
+
+async function deleteMealEntry(id,dateStr){
+  await dbDeleteMealEntry(id);
+  renderMealLog();
 }
 
 // ═══════════════════════════════════════════

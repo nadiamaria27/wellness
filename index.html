@@ -109,6 +109,15 @@ textarea{resize:vertical;line-height:1.6}
 .ds2-del{background:none;border:none;cursor:pointer;color:var(--g3);font-size:14px;line-height:1;padding:0 2px}.ds2-del:hover{color:var(--lift)}
 .sched-note{border:1px solid var(--border);border-left:2px solid var(--acc);padding:11px 15px;font-size:11.5px;color:var(--g2);line-height:1.65;border-radius:0 3px 3px 0}
 .sched-note strong{color:var(--black);font-weight:500}
+/* Week navigation */
+.week-nav{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.week-nav-btn{width:30px;height:30px;border:1px solid var(--border);background:var(--white);border-radius:50%;cursor:pointer;font-size:15px;color:var(--g2);display:flex;align-items:center;justify-content:center;transition:border-color .15s,color .15s;flex-shrink:0}
+.week-nav-btn:hover{border-color:var(--black);color:var(--black)}
+.week-label{font-family:'Playfair Display',serif;font-size:17px;font-weight:400;flex:1}
+.week-today-btn{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;background:none;border:1px solid var(--border);border-radius:2px;padding:4px 10px;cursor:pointer;color:var(--g2);transition:all .15s}
+.week-today-btn:hover{border-color:var(--black);color:var(--black)}
+.week-today-btn.current{border-color:var(--acc);color:var(--acc)}
+
 
 /* MODALS */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.22);z-index:100;align-items:center;justify-content:center}
@@ -134,6 +143,8 @@ textarea{resize:vertical;line-height:1.6}
 .log-field{margin-bottom:12px}.log-field label{font-size:11px;color:var(--g2);display:block;margin-bottom:4px}
 .log-2col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 .log-field textarea{height:110px}
+.log-date-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.log-date-row label{font-size:11px;color:var(--g2);white-space:nowrap;flex-shrink:0}
 
 /* GOALS */
 .goals-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:22px}
@@ -261,6 +272,15 @@ textarea{resize:vertical;line-height:1.6}
 .metric-edit-row input{padding:6px 8px;font-size:12px}
 .metric-add-row{display:grid;grid-template-columns:120px 1fr auto;gap:8px;align-items:center;margin-bottom:14px}
 .metric-add-row input{padding:8px 9px}
+
+/* History Report */
+.report-controls{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;padding:14px 16px;background:var(--off);border:1px solid var(--border);border-radius:3px}
+.report-section{margin-bottom:18px}
+.report-section-title{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--g3);border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:10px}
+.report-stat-row{display:flex;align-items:baseline;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--g5);font-size:13px}
+.report-stat-row:last-child{border-bottom:none}
+.report-stat-val{font-family:'Playfair Display',serif;font-size:15px;color:var(--acc)}
+
 .summary-box{background:var(--off);border:1px solid var(--border);border-radius:3px;padding:16px 18px;font-size:12px;line-height:1.9;color:var(--g1);font-family:monospace;white-space:pre-wrap;word-break:break-word;margin-top:12px;max-height:380px;overflow-y:auto}
 
 @media(max-width:700px){
@@ -290,6 +310,13 @@ textarea{resize:vertical;line-height:1.6}
 <!-- SCHEDULE -->
 <section id="sched" class="panel on">
   <div class="page-title"><h1>Weekly Schedule</h1><p>Select a workout type, then click a day to assign. Stack doubles freely. Tap <em>Log</em> after completing to save notes.</p></div>
+  <!-- Week navigation -->
+  <div class="week-nav">
+    <button class="week-nav-btn" onclick="shiftWeek(-1)" title="Previous week">&#8249;</button>
+    <span class="week-label" id="week-label">—</span>
+    <button class="week-today-btn" id="week-today-btn" onclick="goToday()">Today</button>
+    <button class="week-nav-btn" onclick="shiftWeek(1)" title="Next week">&#8250;</button>
+  </div>
   <div class="quota-strip">
     <div class="quota-item" id="qi-lift"><span class="quota-num" id="q-lift-n">0</span><span class="quota-lbl">/ 3 Lift</span></div>
     <div class="quota-item" id="qi-pil"><span class="quota-num" id="q-pil-n">0</span><span class="quota-lbl">/ 2 Pilates</span></div>
@@ -465,6 +492,7 @@ textarea{resize:vertical;line-height:1.6}
     <button class="hist-tab"    onclick="histTab('h-workouts',this)">Workouts</button>
     <button class="hist-tab"    onclick="histTab('h-metrics',this)">Body Metrics</button>
     <button class="hist-tab"    onclick="histTab('h-summary',this)">Weekly Summary</button>
+    <button class="hist-tab"    onclick="histTab('h-report',this)">Custom Report</button>
   </div>
   <div id="h-food" class="hsub on">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
@@ -529,6 +557,11 @@ textarea{resize:vertical;line-height:1.6}
       <button class="modal-x" onclick="closeLogModal()">×</button>
     </div>
     <div class="modal-body">
+      <div class="log-date-row">
+        <label>Date</label>
+        <input type="date" id="log-date" style="width:160px;padding:6px 9px;font-size:12px">
+        <span style="font-size:11px;color:var(--g3)">Change to log retroactively</span>
+      </div>
       <div class="log-2col">
         <div class="log-field"><label>Class / Studio</label>
           <select id="log-class">
@@ -597,20 +630,66 @@ const LS = {
 
 const today = () => new Date().toISOString().split('T')[0];
 
-function getMondayOfWeek() {
+function getMondayOfWeek(offset=0) {
   const now = new Date();
   const dow = now.getDay();
   const mon = new Date(now);
-  mon.setDate(now.getDate() - (dow===0 ? 6 : dow-1));
+  mon.setDate(now.getDate() - (dow===0 ? 6 : dow-1) + offset*7);
   mon.setHours(0,0,0,0);
   return mon;
+}
+
+function shiftWeek(dir) {
+  weekOffset += dir;
+  renderGrid();
+  updateWeekLabel();
+}
+
+function goToday() {
+  weekOffset = 0;
+  renderGrid();
+  updateWeekLabel();
+}
+
+function updateWeekLabel() {
+  const mon = getMondayOfWeek(weekOffset);
+  const sun = new Date(mon); sun.setDate(mon.getDate()+6);
+  const fmt = d => d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  document.getElementById('week-label').textContent = `${fmt(mon)} — ${fmt(sun)}`;
+  const btn = document.getElementById('week-today-btn');
+  if (btn) btn.classList.toggle('current', weekOffset===0);
 }
 
 // ══════════════════════════════════════
 // STATE
 // ══════════════════════════════════════
-let schedule = LS.get('wh_sched', Array(7).fill(null).map((_,i)=>({wt:BLOCKED.includes(i)?'rest':null,wt2:null,done:false,done2:false})));
+// schedules is a dict keyed by Monday ISO date string
+// e.g. {"2026-03-30": [{wt,wt2,done,done2}×7], ...}
+let schedules = LS.get('wh_schedules', {});
+let weekOffset = 0;  // 0 = current week
 let selectedType = null;
+
+function getMondayISO(offset=0) {
+  const mon = getMondayOfWeek();
+  mon.setDate(mon.getDate() + offset * 7);
+  return mon.toISOString().split('T')[0];
+}
+
+function getScheduleForWeek(mondayISO) {
+  if (!schedules[mondayISO]) {
+    // Initialize: Tuesday (index 1) is rest
+    schedules[mondayISO] = Array(7).fill(null).map((_,i)=>({
+      wt: BLOCKED.includes(i)?'rest':null, wt2:null, done:false, done2:false
+    }));
+  }
+  return schedules[mondayISO];
+}
+
+// Keep old 'schedule' as a computed alias for current week for backward compat
+Object.defineProperty(window, 'schedule', {
+  get() { return getScheduleForWeek(getMondayISO(weekOffset)); },
+  configurable: true
+});
 let foodLog = [];        // today's food, keyed by date
 let mealLog = {};        // {date: {Breakfast:[...], Lunch:[...], ...}}
 let workoutLog = [];     // [{id, date, dayName, type, classType, duration, link, notes}]
@@ -624,8 +703,11 @@ let modalDay = null, modalWt = null;
 let logDay = null, logWt = null;
 
 function loadAllData() {
-  const savedSched = LS.get('wh_sched', null);
-  if (savedSched) schedule = savedSched;
+  const savedSchedules = LS.get('wh_schedules', null);
+  if (savedSchedules) schedules = savedSchedules;
+  // Migrate old flat schedule if exists
+  const oldSched = LS.get('wh_sched', null);
+  if (oldSched && !savedSchedules) { schedules[getMondayISO(0)] = oldSched; }
 
   const savedGoal = LS.get('wh_goal', 'recomp');
   activeGoal = savedGoal;
@@ -650,7 +732,7 @@ function loadAllData() {
 }
 
 function save() {
-  LS.set('wh_sched', schedule);
+  LS.set('wh_schedules', schedules);
   LS.set('wh_goal', activeGoal);
   LS.set('wh_targets', TARGETS);
   LS.set('wh_notes', document.getElementById('health-notes').value||'');
@@ -731,7 +813,7 @@ function removeSec(i,e) {
 
 function renderGrid() {
   const todayStr=today();
-  const mon=getMondayOfWeek();
+  const mon=getMondayOfWeek(weekOffset);
   const grid=document.getElementById('day-grid');
   grid.innerHTML='';
 
@@ -762,7 +844,7 @@ function renderGrid() {
         </div>
         <div class="slot-actions">
           <button class="slot-gen" onclick="openModal(${i},'${s.wt}',event)">View &rsaquo;</button>
-          <button class="slot-log" onclick="openLogModal(${i},'${s.wt}',event)">${s.done?'Re-log':'Log'}</button>
+          <button class="slot-log" onclick="openLogModal(${i},'${s.wt}',event)">${s.done?'Re-log':weekOffset<0?'Log past':'Log'}</button>
         </div>`;
     }
     col.appendChild(slot);
@@ -795,8 +877,10 @@ function updateQuotas(){
 }
 
 function autoFill(){
-  schedule=Array(7).fill(null).map((_,i)=>({wt:BLOCKED.includes(i)?'rest':null,wt2:null,done:false,done2:false}));
-  schedule[0].wt='lift';
+  const monISO=getMondayISO(weekOffset);
+  schedules[monISO]=Array(7).fill(null).map((_,i)=>({wt:BLOCKED.includes(i)?'rest':null,wt2:null,done:false,done2:false}));
+  const s=schedules[monISO];
+  s[0].wt='lift';
   schedule[2].wt='lift'; schedule[2].wt2='run';
   schedule[3].wt='pilates';
   schedule[4].wt='run'; schedule[4].wt2='lift';
@@ -805,7 +889,8 @@ function autoFill(){
   renderGrid(); updateQuotas(); save();
 }
 function resetWeek(){
-  schedule=Array(7).fill(null).map((_,i)=>({wt:BLOCKED.includes(i)?'rest':null,wt2:null,done:false,done2:false}));
+  const monISO=getMondayISO(weekOffset);
+  schedules[monISO]=Array(7).fill(null).map((_,i)=>({wt:BLOCKED.includes(i)?'rest':null,wt2:null,done:false,done2:false}));
   renderGrid(); updateQuotas(); save();
 }
 
@@ -901,14 +986,23 @@ function openLogModal(i,wt,e,fromWorkout=false){
   logDay=i; logWt=wt;
   document.getElementById('log-modal-lbl').textContent=i!==null?`${DAYS[i]} — ${wt.charAt(0).toUpperCase()+wt.slice(1)}`:'';
   ['log-class','log-duration','log-link','log-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  // Pre-fill date from the slot's actual week date
+  const slotDate = i!==null ? (() => {
+    const mon=getMondayOfWeek(weekOffset);
+    const d=new Date(mon); d.setDate(mon.getDate()+i);
+    return d.toISOString().split('T')[0];
+  })() : today();
+  const dateFld=document.getElementById('log-date');
+  if(dateFld) dateFld.value=slotDate;
   document.getElementById('log-modal').classList.add('open');
 }
 function closeLogModal(){document.getElementById('log-modal').classList.remove('open');}
 
 function submitLog(){
   if(logDay===null||!logWt) return;
+  const logDate=document.getElementById('log-date')?.value||today();
   const entry={
-    id:uid(), date:today(), dayName:DAYS[logDay], type:logWt,
+    id:uid(), date:logDate, dayName:DAYS[logDay], type:logWt,
     classType:document.getElementById('log-class').value,
     duration:document.getElementById('log-duration').value,
     link:document.getElementById('log-link').value,
@@ -1173,8 +1267,14 @@ const fmtDate = (dateStr) => {
 function setDefaultDates(){
   const t=new Date(), from=new Date(t);
   from.setDate(t.getDate()-6);
-  document.getElementById('hist-from').value=from.toISOString().split('T')[0];
+  const fromStr=from.toISOString().split('T')[0];
+  document.getElementById('hist-from').value=fromStr;
   document.getElementById('hist-to').value=today();
+  // Also set report defaults
+  const rf=document.getElementById('rep-from');
+  const rt=document.getElementById('rep-to');
+  if(rf) rf.value=fromStr;
+  if(rt) rt.value=today();
 }
 
 function loadFoodHistory(){
@@ -1277,6 +1377,123 @@ function logMetric(){
 }
 function deleteMetric(id){metricsLog=metricsLog.filter(m=>m.id!==id);save();renderMetrics();}
 
+
+// ══════════════════════════════════════
+// CUSTOM HISTORY REPORT
+// ══════════════════════════════════════
+function genReport() {
+  const from = document.getElementById('rep-from').value;
+  const to   = document.getElementById('rep-to').value;
+  const out  = document.getElementById('report-out');
+  if (!from || !to) { out.innerHTML='<div class="empty"><div class="empty-msg">Select a date range.</div></div>'; return; }
+
+  // Workouts in range
+  const wkts = workoutLog.filter(w=>w.date>=from&&w.date<=to);
+  const runs  = runActual.filter(r=>r.date>=from&&r.date<=to);
+  const mets  = metricsLog.filter(m=>m.date>=from&&m.date<=to);
+
+  // Meal log calories in range
+  let mealCals=0, mealDays=0;
+  Object.entries(mealLog).forEach(([date,byType])=>{
+    if(date>=from&&date<=to){
+      const entries=Object.values(byType).flat();
+      if(entries.length){ mealCals+=entries.reduce((a,e)=>a+(e.cal||0),0); mealDays++; }
+    }
+  });
+
+  // Build workout table HTML
+  const wktHTML = wkts.length ? wkts.map(w=>{
+    const meta=[w.classType,w.duration].filter(Boolean).join(' · ');
+    return `<div class="report-stat-row">
+      <div>
+        <div style="font-size:12px;color:var(--g3)">${fmtDate(w.date)}</div>
+        <div>${w.type}${meta?' <span style="color:var(--g3)">· '+meta+'</span>':''}</div>
+        ${w.notes?`<div style="font-size:11px;color:var(--g2);font-style:italic;margin-top:2px;white-space:pre-wrap">${w.notes}</div>`:''}
+        ${w.link?`<div style="font-size:11px;margin-top:2px"><a href="${w.link}" target="_blank" style="color:var(--acc)">${w.link.length>50?w.link.slice(0,50)+'…':w.link}</a></div>`:''}
+      </div>
+    </div>`;
+  }).join('') : '<div style="font-size:12px;color:var(--g3);padding:6px 0">None logged</div>';
+
+  const runHTML = runs.length ? runs.map(r=>`
+    <div class="report-stat-row">
+      <div>
+        <div style="font-size:12px;color:var(--g3)">${fmtDate(r.date)}</div>
+        <div>${r.type} ${r.dist?'· '+r.dist:''} ${r.dur?'· '+r.dur:''} ${r.pace?'@ '+r.pace:''}</div>
+        ${r.notes?`<div style="font-size:11px;color:var(--g2);font-style:italic;margin-top:2px">${r.notes}</div>`:''}
+      </div>
+    </div>`).join('') : '<div style="font-size:12px;color:var(--g3);padding:6px 0">None logged</div>';
+
+  const metHTML = mets.length ? mets.map(m=>`
+    <div class="report-stat-row">
+      <span>${fmtDate(m.date)}${m.notes?' — '+m.notes:''}</span>
+      <span class="report-stat-val">${m.weight} lbs</span>
+    </div>`).join('') : '<div style="font-size:12px;color:var(--g3);padding:6px 0">None logged</div>';
+
+  const startW = mets.length ? mets[mets.length-1].weight : null;
+  const endW   = mets.length ? mets[0].weight : null;
+  const wDiff  = startW&&endW&&startW!==endW ? (endW-startW).toFixed(1) : null;
+
+  const totalRunMiles = runs.reduce((a,r)=>{
+    const n=parseFloat(r.dist); return a+(isNaN(n)?0:n);
+  },0);
+
+  out.innerHTML=`
+    <div class="card card-p" style="margin-bottom:10px">
+      <div style="font-family:'Playfair Display',serif;font-size:17px;margin-bottom:14px">
+        Report: ${fmtDate(from)} — ${fmtDate(to)}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:3px;overflow:hidden;margin-bottom:16px">
+        <div style="background:var(--white);padding:12px;text-align:center">
+          <div style="font-family:'Playfair Display',serif;font-size:22px">${wkts.length}</div>
+          <div style="font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--g3);margin-top:2px">Sessions</div>
+        </div>
+        <div style="background:var(--white);padding:12px;text-align:center">
+          <div style="font-family:'Playfair Display',serif;font-size:22px">${runs.length}</div>
+          <div style="font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--g3);margin-top:2px">Runs</div>
+        </div>
+        <div style="background:var(--white);padding:12px;text-align:center">
+          <div style="font-family:'Playfair Display',serif;font-size:22px">${totalRunMiles>0?totalRunMiles.toFixed(1):'—'}</div>
+          <div style="font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--g3);margin-top:2px">Miles</div>
+        </div>
+        <div style="background:var(--white);padding:12px;text-align:center">
+          <div style="font-family:'Playfair Display',serif;font-size:22px">${wDiff?(parseFloat(wDiff)>=0?'+':'')+wDiff:'—'}</div>
+          <div style="font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--g3);margin-top:2px">Weight Δ</div>
+        </div>
+      </div>
+      <div class="report-section"><div class="report-section-title">Workouts</div>${wktHTML}</div>
+      <div class="report-section"><div class="report-section-title">Runs</div>${runHTML}</div>
+      <div class="report-section"><div class="report-section-title">Body Metrics</div>${metHTML}</div>
+      ${mealDays?`<div class="report-section"><div class="report-section-title">Meal Log</div><div class="report-stat-row"><span>Avg calories (${mealDays} days logged)</span><span class="report-stat-val">${Math.round(mealCals/mealDays)}</span></div></div>`:''}
+    </div>`;
+
+  // Build plain text for copy
+  const plain=`WELLNESS REPORT: ${from} to ${to}
+
+SUMMARY
+Sessions: ${wkts.length} | Runs: ${runs.length} | Miles: ${totalRunMiles>0?totalRunMiles.toFixed(1):'—'} | Weight change: ${wDiff?(parseFloat(wDiff)>=0?'+':'')+wDiff+' lbs':'—'}
+
+WORKOUTS
+${wkts.map(w=>`${w.date} — ${w.type}${w.classType?' ('+w.classType+')':''}${w.duration?' '+w.duration:''}${w.notes?'\n  '+w.notes:''}`).join('\n')||'None'}
+
+RUNS
+${runs.map(r=>`${r.date} — ${r.type} ${r.dist||''} ${r.dur||''} ${r.pace?'@ '+r.pace:''}${r.notes?' | '+r.notes:''}`).join('\n')||'None'}
+
+BODY METRICS
+${mets.map(m=>`${m.date}: ${m.weight} lbs${m.notes?' — '+m.notes:''}`).join('\n')||'None'}
+${mealDays?`\nMEAL LOG\nAvg calories: ${Math.round(mealCals/mealDays)} (${mealDays} days logged)`:''}`;
+
+  out.dataset.report = plain;
+}
+
+function copyReport() {
+  const plain = document.getElementById('report-out')?.dataset?.report;
+  if (!plain) { genReport(); return; }
+  navigator.clipboard.writeText(plain).then(()=>{
+    const btn=document.querySelector('.report-controls .btn-dark');
+    if(btn){const t=btn.textContent;btn.textContent='Copied!';setTimeout(()=>btn.textContent=t,2000);}
+  });
+}
+
 // ══════════════════════════════════════
 // WEEKLY SUMMARY
 // ══════════════════════════════════════
@@ -1347,6 +1564,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 loadAllData();
 renderGrid();
+updateWeekLabel();
 updateQuotas();
 refreshGoalDisplay();
 refreshNutrition();
